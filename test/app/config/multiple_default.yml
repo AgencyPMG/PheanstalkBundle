@@ -1,0 +1,7 @@
+imports:
+    - { resource: config.yml }
+
+pmg_pheanstalk:
+    connections:
+        default: ~
+        another: ~

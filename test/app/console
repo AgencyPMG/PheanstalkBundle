@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+/*
+ * This file is part of pmg/pheanstalk-bundle
+ *
+ * Copyright (c) PMG <https://www.pmg.com>
+ *
+ * For full copyright information see the LICENSE file distributed
+ * with this source code.
+ *
+ * @license     http://opensource.org/licenses/Apache-2.0 Apache-2.0
+ */
+
+
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Debug\Debug;
+
+set_time_limit(0);
+
+require __DIR__.'/../bootstrap.php';
+
+Debug::enable();
+
+$kernel = new PMG\PheanstalkBundle\Test\TestKernel();
+$application = new Application($kernel);
+$application->run();

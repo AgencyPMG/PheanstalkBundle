@@ -1,0 +1,11 @@
+imports:
+    - { resource: config.yml }
+
+pmg_pheanstalk:
+    default_connection: another
+    connections:
+        another:
+            host: localhost
+            port: 1111
+            timeout: 10
+            persist: true
