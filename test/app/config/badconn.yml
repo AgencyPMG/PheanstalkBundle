@@ -2,5 +2,6 @@ imports:
     - { resource: config.yml }
 
 pmg_pheanstalk:
-    host: nopeNopeNope.dev
+    host: localhost
+    port: 11301
     timeout: 1
