@@ -26,7 +26,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
         // clear up the cached files
         foreach (glob(__DIR__.'/app/tmp/*') as $fn) {
-            @unlink($fn);
+            if ('.' !== basename($fn)[0]) {
+                @unlink($fn);
+            }
         }
     }
 
