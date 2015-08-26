@@ -1,0 +1,6 @@
+imports:
+    - { resource: config.yml }
+
+pmg_pheanstalk:
+    host: nopeNopeNope.dev
+    timeout: 1
