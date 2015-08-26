@@ -27,6 +27,10 @@ class ContainerTest extends TestCase
         $this->assertPheanstalk($container->get('pmg_pheanstalk.default'), 'should have the default connection def');
         $this->assertPheanstalk($container->get('pmg_pheanstalk'), 'should have the default alias');
         $this->assertSame($container->get('pmg_pheanstalk.default'), $container->get('pmg_pheanstalk'));
+
+        $conn = $container->get('pmg_pheanstalk')->getConnection();
+        $this->assertEquals('localhost', $conn->getHost());
+        $this->assertEquals(PheanstalkInterface::DEFAULT_PORT, $conn->getPort());
     }
 
     public function testConfigurationCanLoadMultipleDefaultConnections()
@@ -38,6 +42,15 @@ class ContainerTest extends TestCase
         $this->assertPheanstalk($container->get('pmg_pheanstalk.another'), 'should have the "another" connection def');
         $this->assertPheanstalk($container->get('pmg_pheanstalk'), 'should have the default alias');
         $this->assertSame($container->get('pmg_pheanstalk.default'), $container->get('pmg_pheanstalk'));
+
+        $conn = $container->get('pmg_pheanstalk.default')->getConnection();
+        $this->assertEquals('localhost', $conn->getHost());
+        $this->assertEquals(PheanstalkInterface::DEFAULT_PORT, $conn->getPort());
+
+        $conn = $container->get('pmg_pheanstalk.another')->getConnection();
+        $this->assertEquals('localhost', $conn->getHost());
+        $this->assertEquals(PheanstalkInterface::DEFAULT_PORT, $conn->getPort());
+
     }
 
     public function testConfigurationWithDifferentDefaultConnectionCanBeLoaded()
@@ -48,6 +61,11 @@ class ContainerTest extends TestCase
         $this->assertPheanstalk($container->get('pmg_pheanstalk.another'), 'should have the "another" connection def');
         $this->assertPheanstalk($container->get('pmg_pheanstalk'), 'should have the default alias');
         $this->assertSame($container->get('pmg_pheanstalk.another'), $container->get('pmg_pheanstalk'));
+
+        $conn = $container->get('pmg_pheanstalk.another')->getConnection();
+        $this->assertEquals('anotherHost', $conn->getHost());
+        $this->assertEquals(1111, $conn->getPort());
+        $this->assertEquals(10, $conn->getConnectTimeout());
     }
 
     /**

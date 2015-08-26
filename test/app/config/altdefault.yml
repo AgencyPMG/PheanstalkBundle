@@ -5,7 +5,7 @@ pmg_pheanstalk:
     default_connection: another
     connections:
         another:
-            host: localhost
+            host: anotherHost
             port: 1111
             timeout: 10
             persist: true
