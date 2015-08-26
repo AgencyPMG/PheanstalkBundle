@@ -7,7 +7,7 @@ php:
 notifications:
   email:
     recipients:
-      - tech@pmg.co
+      - tech@pmg.com
     on_success: change
     on_failure: always
 
