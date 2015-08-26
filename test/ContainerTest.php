@@ -51,6 +51,15 @@ class ContainerTest extends TestCase
     }
 
     /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage No Pheanstalk connection named
+     */
+    public function testConfigurationWithUnrecognizedDefaultValueCausesError()
+    {
+        $this->loadContainer('baddefault.yml');
+    }
+
+    /**
      * This loads a container by booting up a kernel with our
      * bundle installed. The point here is that we want to get
      * as close as possible to what the actual use will be.

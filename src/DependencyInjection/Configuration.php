@@ -38,8 +38,11 @@ final class Configuration implements ConfigurationInterface
                     return is_array($config) && !array_key_exists('connections', $config);
                 })
                 ->then(function ($config) {
+                    $default = isset($config['default_connection']) ? $config['default_connection'] : 'default';
+                    unset($config['default_connection']);
+
                     return [
-                        'default_connection'    => 'default',
+                        'default_connection'    => $default,
                         'connections'           => ['default' => $config],
                     ];
                 })

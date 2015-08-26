@@ -37,15 +37,15 @@ final class PmgPheanstalkExtension extends ConfigurableExtension
             $connections[$name] = $this->loadConnection($container, $name, $connConfig);
         }
 
-        $default = self::serviceName($config['default_connection']);
-        if (!$container->hasDefinition($default)) {
+        $default = $config['default_connection'];
+        if (!isset($connections[$default])) {
             throw new \LogicException(sprintf(
-                'No Pheanstalk connecton named "%s" in the configuration, cannot set the default connection',
+                'No Pheanstalk connection named "%s" in the configuration, cannot set the default connection',
                 $config['default_connection']
             ));
         }
 
-        $container->setAlias('pmg_pheanstalk', $default);
+        $container->setAlias('pmg_pheanstalk', $connections[$default]);
         $container->setParameter('pmg_pheanstalk.params.default_conn', $default);
         $container->setParameter('pmg_pheanstalk.params.connections', $connections);
     }
