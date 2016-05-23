@@ -10,15 +10,9 @@
  * @license     http://opensource.org/licenses/Apache-2.0 Apache-2.0
  */
 
-namespace PMG\PheanstalkBundle;
+namespace PMG\PheanstalkBundle\Controller\Exception;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-
-/**
- * The bundle!
- *
- * @since   1.0
- */
-final class PmgPheanstalkBundle extends Bundle
+final class InvalidTube extends \DomainException
 {
+    //noop
 }
