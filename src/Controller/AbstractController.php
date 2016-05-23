@@ -28,14 +28,13 @@ abstract class AbstractController extends Controller
     public function getConnection(Request $request)
     {
         $connName = $request->get('connection') ?: $this->getParameter('pmg_pheanstalk.params.default_conn');
-        $connection = $this->get("pmg_pheanstalk.{$connName}");
 
         $valid = $this->getParameter('pmg_pheanstalk.params.connections');
         if (!isset($valid[$connName])) {
             throw new BadConnection("{$connName} is not a valid Pheanstalk connection");
         }
 
-        return $connection;
+        return $this->get("pmg_pheanstalk.{$connName}");
     }
 
     /**
