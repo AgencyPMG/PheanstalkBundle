@@ -1,14 +1,14 @@
 list_tubes:
-  path:     /api/queue/tubes
+  path:     /queue/tubes
   defaults: { _controller: PmgPheanstalkBundle:Queue:listTubes }
   methods:  [GET]
 
 get_tube:
-  path:     /api/queue/{tube}
+  path:     /queue/{tube}
   defaults: { _controller: PmgPheanstalkBundle:Queue:getInfo }
   methods:  [GET]
 
 list_all_info:
-  path:     /api/queue
+  path:     /queue
   defaults: { _controller: PmgPheanstalkBundle:Queue:listInfo }
   methods:  [GET]
