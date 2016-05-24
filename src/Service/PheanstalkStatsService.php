@@ -12,6 +12,8 @@
 
 namespace PMG\PheanstalkBundle\Service;
 
+use Pheanstalk\PheanstalkInterface;
+
 class PheanstalkStatsService implements StatsService
 {
     /**
