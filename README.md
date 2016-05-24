@@ -82,6 +82,7 @@ pmg_pheanstalk:
 
 ## Statistic Endpoints
 This bundle includes a few basic endpoints that return JSON data that provides information about the queue tubes.
+Each endpoint also allows for a `connection` parameter to be supplied. If it is not, the `default` connection is used.
 
 ## Enabling the endpoints
 Add the following line to your `routing.xml` file. (Or equivalent YML file)
