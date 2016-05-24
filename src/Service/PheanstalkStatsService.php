@@ -12,14 +12,22 @@
 
 namespace PMG\PheanstalkBundle\Service;
 
-use Pheanstalk\PheanstalkInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface as Container;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class PheanstalkStatsService implements StatsService
 {
+    private $container;
+
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function listTubes(PheanstalkInterface $conn)
+    public function listTubes($connection)
     {
         return $conn->listTubes();
     }
@@ -27,7 +35,7 @@ class PheanstalkStatsService implements StatsService
     /**
      * {@inheritdoc}
      */
-    public function getStatsForTube($tube, PheanstalkInterface $conn)
+    public function getStatsForTube($tube, $connection)
     {
         return (array) $conn->statsTube($tube);
     }
@@ -35,7 +43,7 @@ class PheanstalkStatsService implements StatsService
     /**
      * {@inheritdoc}
      */
-    public function listTubeStats(PheanstalkInterface $conn)
+    public function listTubeStats($connection)
     {
         $tubes = $conn->listTubes();
 
@@ -47,5 +55,22 @@ class PheanstalkStatsService implements StatsService
         }
 
         return $stats;
+    }
+
+    /**
+     * Attempts to get a valid Pheanstalk connection
+     *
+     * @return \Pheanstalk\PheanstalkInterface
+     */
+    private function getConnection($connName=null)
+    {
+        $connName = $connName ?: $this->container->getParameter('pmg_pheanstalk.params.default_conn');
+
+        $valid = $this->container->getParameter('pmg_pheanstalk.params.connections');
+        if (!isset($valid[$connName])) {
+            throw new BadRequestHttpException(sprintf("{$connName} is not a valid Pheanstalk connection", $connName));
+        }
+
+        return $this->container->get("pmg_pheanstalk.{$connName}");
     }
 }

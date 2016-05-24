@@ -22,17 +22,6 @@ class QueueControllerTest extends TestCase
 {
     private $controller, $stats;
 
-    public function testControllerCanFetchAValidConnection()
-    {
-        $container = $this->loadContainer('default.yml');
-        $request = Request::createFromGlobals();
-        $this->controller->setContainer($container);
-
-        $conn = $this->controller->getConnection($request);
-        $this->assertNotNull($conn);
-        $this->assertInstanceOf(PheanstalkInterface::class, $conn);
-    }
-
     public function testTubesCanBeListedSuccessfully()
     {
         $this->willFetchTubes();
@@ -57,19 +46,6 @@ class QueueControllerTest extends TestCase
         $tubes = $this->decodeResponse($this->controller->statsTubeAction('default', $request));
         $this->assertNotNull($tubes);
         $this->assertArrayHasKey('name', $tubes);
-    }
-
-    /**
-     * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
-     */
-    public function testStatsTubeWillThrowHttpExceptionWhenAnInvalidConnectionIsGiven()
-    {
-        $container = $this->loadContainer('default.yml');
-        $request = Request::createFromGlobals();
-        $request->query->set('connection', 'another');
-        $this->controller->setContainer($container);
-
-        $this->controller->statsTubeAction('another', $request);
     }
 
     public function testStatsCanBeFetchedForAValidTubeOnExternallyDefinedConnection()

@@ -13,31 +13,10 @@
 namespace PMG\PheanstalkBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use PMG\PheanstalkBundle\Controller\Exception\BadConnection;
 
 abstract class AbstractController extends Controller
 {
-    /**
-     * Attempts to get a valid Pheanstalk connection
-     *
-     * @return \Pheanstalk\PheanstalkInterface
-     */
-    public function getConnection(Request $request)
-    {
-        $connName = $request->get('connection') ?: $this->getParameter('pmg_pheanstalk.params.default_conn');
-
-        $valid = $this->getParameter('pmg_pheanstalk.params.connections');
-        if (!isset($valid[$connName])) {
-            throw new HttpException(400, sprintf("{$connName} is not a valid Pheanstalk connection", $connName));
-        }
-
-        return $this->get("pmg_pheanstalk.{$connName}");
-    }
-
     /**
      * Creates a json response from an object.
      *

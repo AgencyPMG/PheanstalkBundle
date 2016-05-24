@@ -32,13 +32,13 @@ class QueueController extends AbstractController
 
     public function listTubesAction(Request $r)
     {
-        $conn = $this->getConnection($r);
+        $conn = $this->getConnectionFromRequest($r);
         return $this->toResponse($this->stats->listTubes($conn));
     }
 
     public function statsTubeAction($tube, Request $r)
     {
-        $conn = $this->getConnection($r);
+        $conn = $this->getConnectionFromRequest($r);
 
         try {
             return $this->toResponse($this->stats->getStatsForTube($tube, $conn));
@@ -49,7 +49,12 @@ class QueueController extends AbstractController
 
     public function statsTubesAction(Request $r)
     {
-        $conn = $this->getConnection($r);
+        $conn = $this->getConnectionFromRequest($r);
         return $this->toResponse($this->stats->listTubeStats($conn));
+    }
+
+    private function getConnectionFromRequest(Request $r)
+    {
+        return $r->get('connection');
     }
 }
