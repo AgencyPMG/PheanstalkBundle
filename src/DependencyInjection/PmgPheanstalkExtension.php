@@ -17,6 +17,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\Config\FileLocator;
 use Pheanstalk\Pheanstalk;
 use Pheanstalk\PheanstalkInterface;
 
@@ -28,10 +30,35 @@ use Pheanstalk\PheanstalkInterface;
 final class PmgPheanstalkExtension extends ConfigurableExtension
 {
     /**
+     * Loads all internal service definition files into the container
+     */
+    private function loadFiles(array $config, ContainerBuilder $container)
+    {
+        $loader = new XmlFileLoader(
+            $container,
+            new FileLocator(__DIR__.'/../Resources/config')
+        );
+
+        foreach ($config as $key => $val) {
+            $container->setParameter("app.{$key}", $val);
+        }
+
+        $files = [
+            'services.xml'
+        ];
+
+        foreach ($files as $fn) {
+            $loader->load($fn);
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function loadInternal(array $config, ContainerBuilder $container)
     {
+        $this->loadFiles($config, $container);
+
         $connections = [];
         foreach ($config['connections'] as $name => $connConfig) {
             $connections[$name] = $this->loadConnection($container, $name, $connConfig);
