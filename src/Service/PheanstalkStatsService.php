@@ -29,7 +29,7 @@ class PheanstalkStatsService implements StatsService
      */
     public function listTubes($connection)
     {
-        return $conn->listTubes();
+        return $this->getConnection($connection->listTubes());
     }
 
     /**
@@ -37,7 +37,7 @@ class PheanstalkStatsService implements StatsService
      */
     public function getStatsForTube($tube, $connection)
     {
-        return (array) $conn->statsTube($tube);
+        return (array) $this->getConnection($connection->statsTube($tube));
     }
 
     /**
@@ -45,11 +45,11 @@ class PheanstalkStatsService implements StatsService
      */
     public function listTubeStats($connection)
     {
-        $tubes = $conn->listTubes();
+        $tubes = $this->getConnection($connection->listTubes());
 
         $stats = [];
         foreach($tubes as $tube) {
-            $stat = $this->getStatsForTube($tube, $conn);
+            $stat = $this->getStatsForTube($tube, $connection);
             unset($stat['name']);
             $stats[$tube] = $stat;
         }
