@@ -7,7 +7,9 @@
     <services>
         <service id="pmg_pheanstalk.stats_service" class="PMG\PheanstalkBundle\Service\PheanstalkStatsService" />
 
-        <service id="pmg_pheanstalk.queue_controller" class="PMG\PheanstalkBundle\Controller\QueueController">
+        <service id="pmg_pheanstalk.abstract_controller" abstract="true" />
+        <service id="pmg_pheanstalk.queue_controller" class="PMG\PheanstalkBundle\Controller\QueueController"
+            parent="pmg_pheanstalk.abstract_controller" >
             <argument type="service" id="pmg_pheanstalk.stats_service" />
         </service>
 
