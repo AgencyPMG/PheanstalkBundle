@@ -16,13 +16,16 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Pheanstalk\PheanstalkInterface;
 use PMG\PheanstalkBundle\Controller\QueueController;
+use PMG\PheanstalkBundle\Service\StatsService;
 
 class QueueControllerTest extends TestCase
 {
+    private $controller, $stats;
+
     public function testControllerCanFetchAValidConnection()
     {
         $container = $this->loadContainer('default.yml');
-        $request = $this->getMock(Request::class);
+        $request = Request::createFromGlobals();
         $this->controller->setContainer($container);
 
         $conn = $this->controller->getConnection($request);
@@ -32,45 +35,117 @@ class QueueControllerTest extends TestCase
 
     public function testTubesCanBeListedSuccessfully()
     {
+        $this->willFetchTubes();
+
         $container = $this->loadContainer('default.yml');
-        $request = $this->getMock(Request::class);
+        $request = Request::createFromGlobals();
         $this->controller->setContainer($container);
 
         $tubes = $this->controller->listTubesAction($request);
+        $this->arrayHasKey('default', $tubes);
+        $this->arrayHasKey('test1', $tubes);
     }
 
     public function testStatsCanBeFetchedForAValidTube()
     {
+        $this->willGetTubeInfo('default');
+
         $container = $this->loadContainer('default.yml');
-        $request = $this->getMock(Request::class);
+        $request = Request::createFromGlobals();
         $this->controller->setContainer($container);
 
-        $tubes = $this->decodeResponse($this->controller->getInfoAction('default', $request));
+        $tubes = $this->decodeResponse($this->controller->statsTubeAction('default', $request));
         $this->assertNotNull($tubes);
         $this->assertArrayHasKey('name', $tubes);
     }
 
     /**
-     * @expectedException PMG\PheanstalkBundle\Controller\Exception\InvalidTube
+     * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
      */
-    public function testGetInfoWillThrowExceptionWhenInvalidTubeIsSpecified()
+    public function testStatsTubeWillThrowHttpExceptionWhenAnInvalidConnectionIsGiven()
     {
         $container = $this->loadContainer('default.yml');
-        $request = $this->getMock(Request::class);
+        $request = Request::createFromGlobals();
+        $request->query->set('connection', 'another');
         $this->controller->setContainer($container);
-        $this->controller->getInfoAction('invalid', $request);
+
+        $this->controller->statsTubeAction('another', $request);
+    }
+
+    public function testStatsCanBeFetchedForAValidTubeOnExternallyDefinedConnection()
+    {
+        $this->willGetTubeInfo('another');
+
+        $container = $this->loadContainer('multiple_default.yml');
+        $request = Request::createFromGlobals();
+        $request->query->set('connection', 'another');
+        $this->controller->setContainer($container);
+
+        $tubes = $this->decodeResponse($this->controller->statsTubeAction('another', $request));
+        $this->assertNotNull($tubes);
+        $this->assertArrayHasKey('name', $tubes);
     }
 
     public function testStatsCanBeFetchedForAllTubes()
     {
+        $this->willListTubeStats();
+
+        $request = Request::createFromGlobals();
         $container = $this->loadContainer('default.yml');
-        $request = $this->getMock(Request::class);
         $this->controller->setContainer($container);
 
-        $tubes = $this->decodeResponse($this->controller->listInfoAction($request));
+        $tubes = $this->decodeResponse($this->controller->statsTubesAction($request));
 
         $this->assertCount(1, $tubes);
         $this->assertArrayHasKey('default', $tubes);
+    }
+
+    /**
+     * @expectedException Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    public function testIfSpecifiedTubeDoesNotExistControllerWillThrowNotFoundHttpException()
+    {
+        $request = Request::createFromGlobals();
+        $this->stats->expects($this->once())
+            ->method('getStatsForTube')
+            ->with('invalid')
+            ->will($this->throwException(new \Pheanstalk\Exception\ServerException('Connection does not exist')));
+
+        $container = $this->loadContainer('default.yml');
+        $this->controller->setContainer($container);
+
+        $tubes = $this->controller->statsTubeAction('invalid', $request);
+    }
+
+    private function willFetchTubes()
+    {
+        $this->stats->expects($this->once())
+            ->method('listTubes')
+            ->willReturn(['default', 'test1']);
+    }
+
+    private function willGetTubeInfo($tube)
+    {
+        $this->stats->expects($this->once())
+            ->method('getStatsForTube')
+            ->with($tube)
+            ->willReturn([
+                'name'                => $tube,
+                'current-jobs-urgent' => 0,
+                'total-jobs'          => 0,
+            ]);
+    }
+
+    private function willListTubeStats()
+    {
+        $this->stats->expects($this->once())
+            ->method('listTubeStats')
+            ->willReturn([
+                'default' => [
+                    'current-jobs-urgent' => 0,
+                    'total-jobs'          => 0,
+                ]
+            ]);
     }
 
     private function decodeResponse($resp) 
@@ -90,6 +165,7 @@ class QueueControllerTest extends TestCase
 
     protected function setUp()
     {
-        $this->controller = new QueueController();
+        $this->stats = $this->getMock(StatsService::class);
+        $this->controller = new QueueController($this->stats);
     }
 }

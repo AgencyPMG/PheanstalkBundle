@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<services>
+    <service id="pmg_pheanstalk.stats_service" class="PmgPheanstalkBundle\Service\PheanstalkStatsService" />
+
+    <service id="pmg_pheanstalk.queue_controller" class="PmgPheanstalkBundle\Controller\QueueController">
+        <argument type="service" id="pmg_pheanstalk.stats_service" />
+    </service>
+</services>

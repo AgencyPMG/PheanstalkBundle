@@ -14,39 +14,42 @@ namespace PMG\PheanstalkBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use PMG\PheanstalkBundle\Controller\Exception\InvalidTube;
+use PMG\PheanstalkBundle\Service\StatsService;
 
 class QueueController extends AbstractController
 {
+    /**
+     * @var PheanstalkStats
+     */
+    private $stats;
+
+    public function __construct(StatsService $stats)
+    {
+        $this->stats = $stats;
+    }
+
     public function listTubesAction(Request $r)
     {
-        return $this->toResponse($this->getConnection($r)->listTubes());
+        $conn = $this->getConnection($r);
+        return $this->toResponse($this->stats->listTubes($conn));
     }
 
-    public function getInfoAction($tube, Request $r)
+    public function statsTubeAction($tube, Request $r)
     {
         $conn = $this->getConnection($r);
-        $tubes = $conn->listTubes();
 
-        if (!in_array($tube, $tubes)) {
-            throw new InvalidTube(sprintf('%s is not a valid tube', $tube));
+        try {
+            return $this->toResponse($this->stats->getStatsForTube($tube, $conn));
+        } catch (\Pheanstalk\Exception\ServerException $e) {
+            throw new NotFoundHttpException(sprintf('Tube %s Not Found', $tube), $e);
         }
-
-        return $this->toResponse((array) $conn->statsTube($tube));
     }
 
-    public function listInfoAction(Request $r)
+    public function statsTubesAction(Request $r)
     {
         $conn = $this->getConnection($r);
-        $tubes = $conn->listTubes();
-
-        $stats = [];
-        foreach($tubes as $tube) {
-            $stat = (array) $conn->statsTube($tube);
-            unset($stat['name']);
-            $stats[$tube] = $stat;
-        }
-
-        return $this->toResponse($stats);
+        return $this->toResponse($this->stats->listTubeStats($conn));
     }
 }
