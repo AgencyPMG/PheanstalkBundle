@@ -5,15 +5,15 @@
     http://symfony.com/schema/routing/routing-1.0.xsd">
     
     <route id="pmg_pheanstalk.list_tubes" path="/queue/tubes" methods="GET">
-        <default key="_controller">pmg_pheanstalk.queue_controller:listTubes</default>
+        <default key="_controller">pmg_pheanstalk.queue_controller:listTubesAction</default>
     </route>
 
     <route id="pmg_pheanstalk.stats_tube" path="/queue/{tube}" methods="GET">
-        <default key="_controller">pmg_pheanstalk.queue_controller:statsTube</default>
+        <default key="_controller">pmg_pheanstalk.queue_controller:statsTubeAction</default>
     </route>
 
     <route id="pmg_pheanstalk.stats_tubes" path="/queue" methods="GET">
-        <default key="_controller">pmg_pheanstalk.queue_controller:statsTubes</default>
+        <default key="_controller">pmg_pheanstalk.queue_controller:statsTubesAction</default>
     </route>
 
 </routes>
