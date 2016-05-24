@@ -22,19 +22,6 @@ class QueueControllerTest extends TestCase
 {
     private $controller, $stats;
 
-    public function testTubesCanBeListedSuccessfully()
-    {
-        $this->willFetchTubes();
-
-        $container = $this->loadContainer('default.yml');
-        $request = Request::create('/');
-        $this->controller->setContainer($container);
-
-        $tubes = $this->controller->listTubesAction($request);
-        $this->arrayHasKey('default', $tubes);
-        $this->arrayHasKey('test1', $tubes);
-    }
-
     public function testStatsCanBeFetchedForAValidTube()
     {
         $this->willGetTubeInfo('default');

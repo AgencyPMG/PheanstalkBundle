@@ -31,12 +31,6 @@ class QueueController extends Controller
         $this->stats = $stats;
     }
 
-    public function listTubesAction(Request $r)
-    {
-        $conn = $this->getConnectionFromRequest($r);
-        return $this->toResponse($this->stats->listTubes($conn));
-    }
-
     public function statsTubeAction($tube, Request $r)
     {
         $conn = $this->getConnectionFromRequest($r);
