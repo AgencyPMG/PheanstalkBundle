@@ -6,7 +6,7 @@
 
     <services>
         <service id="pmg_pheanstalk.stats_service" class="PMG\PheanstalkBundle\Service\PheanstalkStatsService" >
-            <argument type="service" id="@service_container" />
+            <argument type="service" id="service_container" />
         </service>
 
         <service id="pmg_pheanstalk.abstract_controller" abstract="true" />
