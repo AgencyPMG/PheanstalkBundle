@@ -5,9 +5,9 @@
         http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="pmg_pheanstalk.stats_service" class="PmgPheanstalkBundle\Service\PheanstalkStatsService" />
+        <service id="pmg_pheanstalk.stats_service" class="PMG\PheanstalkBundle\Service\PheanstalkStatsService" />
 
-        <service id="pmg_pheanstalk.queue_controller" class="PmgPheanstalkBundle\Controller\QueueController">
+        <service id="pmg_pheanstalk.queue_controller" class="PMG\PheanstalkBundle\Controller\QueueController">
             <argument type="service" id="pmg_pheanstalk.stats_service" />
         </service>
 
