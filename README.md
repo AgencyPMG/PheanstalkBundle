@@ -93,7 +93,6 @@ Add the following line to your `routing.xml` file. (Or equivalent YML file)
 
 ## Available endpoints
 
-* `[GET] /queue/tubes` - Lists all tubes that are currently open
-* `[GET] /queue/{tube}` - Provides all information from beanstalkd about the given tube
-* `[GET] /queue` - Provides all information about all tubes from beanstalkd
+* `[GET] /{tube}` - Provides all information from beanstalkd about the given tube
+* `[GET] /` - Provides all information about all tubes from beanstalkd
 
