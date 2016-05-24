@@ -27,7 +27,7 @@ class QueueControllerTest extends TestCase
         $this->willFetchTubes();
 
         $container = $this->loadContainer('default.yml');
-        $request = Request::createFromGlobals();
+        $request = Request::create('/');
         $this->controller->setContainer($container);
 
         $tubes = $this->controller->listTubesAction($request);
@@ -40,7 +40,7 @@ class QueueControllerTest extends TestCase
         $this->willGetTubeInfo('default');
 
         $container = $this->loadContainer('default.yml');
-        $request = Request::createFromGlobals();
+        $request = Request::create('/');
         $this->controller->setContainer($container);
 
         $tubes = $this->decodeResponse($this->controller->statsTubeAction('default', $request));
@@ -53,7 +53,7 @@ class QueueControllerTest extends TestCase
         $this->willGetTubeInfo('another');
 
         $container = $this->loadContainer('multiple_default.yml');
-        $request = Request::createFromGlobals();
+        $request = Request::create('/');
         $request->query->set('connection', 'another');
         $this->controller->setContainer($container);
 
@@ -66,7 +66,7 @@ class QueueControllerTest extends TestCase
     {
         $this->willListTubeStats();
 
-        $request = Request::createFromGlobals();
+        $request = Request::create('/');
         $container = $this->loadContainer('default.yml');
         $this->controller->setContainer($container);
 
@@ -81,7 +81,7 @@ class QueueControllerTest extends TestCase
      */
     public function testIfSpecifiedTubeDoesNotExistControllerWillThrowNotFoundHttpException()
     {
-        $request = Request::createFromGlobals();
+        $request = Request::create('/');
         $this->stats->expects($this->once())
             ->method('getStatsForTube')
             ->with('invalid')
