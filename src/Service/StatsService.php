@@ -12,7 +12,7 @@
 
 namespace PMG\PheanstalkBundle\Service;
 
-use \Pheanstalk\PheanstalkInterface;
+use Pheanstalk\PheanstalkInterface;
 
 interface StatsService
 {
