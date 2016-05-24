@@ -30,29 +30,6 @@ use Pheanstalk\PheanstalkInterface;
 final class PmgPheanstalkExtension extends ConfigurableExtension
 {
     /**
-     * Loads all internal service definition files into the container
-     */
-    private function loadFiles(array $config, ContainerBuilder $container)
-    {
-        $loader = new XmlFileLoader(
-            $container,
-            new FileLocator(__DIR__.'/../Resources/config')
-        );
-
-        foreach ($config as $key => $val) {
-            $container->setParameter("app.{$key}", $val);
-        }
-
-        $files = [
-            'services.xml'
-        ];
-
-        foreach ($files as $fn) {
-            $loader->load($fn);
-        }
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected function loadInternal(array $config, ContainerBuilder $container)
@@ -98,5 +75,28 @@ final class PmgPheanstalkExtension extends ConfigurableExtension
     private static function serviceName($name)
     {
         return sprintf('pmg_pheanstalk.%s', $name);
+    }
+
+    /**
+     * Loads all internal service definition files into the container
+     */
+    private function loadFiles(array $config, ContainerBuilder $container)
+    {
+        $loader = new XmlFileLoader(
+            $container,
+            new FileLocator(__DIR__.'/../Resources/config')
+        );
+
+        foreach ($config as $key => $val) {
+            $container->setParameter("app.{$key}", $val);
+        }
+
+        $files = [
+            'services.xml'
+        ];
+
+        foreach ($files as $fn) {
+            $loader->load($fn);
+        }
     }
 }
