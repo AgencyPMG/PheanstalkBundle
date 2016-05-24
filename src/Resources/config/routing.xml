@@ -12,7 +12,7 @@
         <default key="_controller">pmg_pheanstalk.queue_controller:statsTubeAction</default>
     </route>
 
-    <route id="pmg_pheanstalk.stats_tubes" path="/stats" methods="GET">
+    <route id="pmg_pheanstalk.stats_tubes" path="/" methods="GET">
         <default key="_controller">pmg_pheanstalk.queue_controller:statsTubesAction</default>
     </route>
 
