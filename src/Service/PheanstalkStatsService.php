@@ -12,7 +12,7 @@
 
 namespace PMG\PheanstalkBundle\Service;
 
-class PheanstalkStatsService extends StatsService
+class PheanstalkStatsService implements StatsService
 {
     /**
      * {@inheritdoc}
