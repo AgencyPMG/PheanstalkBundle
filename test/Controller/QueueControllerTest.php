@@ -128,7 +128,7 @@ class QueueControllerTest extends TestCase
 
     protected function setUp()
     {
-        $this->stats = $this->getMock(StatsService::class);
+        $this->stats = $this->createMock(StatsService::class);
         $this->controller = new QueueController($this->stats);
     }
 }
