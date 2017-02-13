@@ -79,3 +79,21 @@ pmg_pheanstalk:
             host: anotherServier.com
             port: 11301
 ```
+
+## Statistic Endpoints
+This bundle includes a few basic endpoints that return JSON data that provides information about the queue tubes.
+Each endpoint also allows for a `connection` parameter to be supplied. If it is not, the `default` connection is used.
+
+## Enabling the endpoints
+Add the following line to your `routing.xml` file. (Or equivalent YML file)
+```xml
+   <import resource="@PmgPheanstalkBundle/Resources/config/routing.yml">
+        <default key="_format">json</default>
+   </import>
+```
+
+## Available endpoints
+
+* `[GET] /{tube}` - Provides all information from beanstalkd about the given tube
+* `[GET] /` - Provides all information about all tubes from beanstalkd
+

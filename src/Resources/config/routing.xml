@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+    http://symfony.com/schema/routing/routing-1.0.xsd">
+    
+    <route id="pmg_pheanstalk.stats_tube" path="/{tube}" methods="GET">
+        <default key="_controller">pmg_pheanstalk.queue_controller:statsTubeAction</default>
+    </route>
+
+    <route id="pmg_pheanstalk.stats_tubes" path="/" methods="GET">
+        <default key="_controller">pmg_pheanstalk.queue_controller:statsTubesAction</default>
+    </route>
+
+</routes>

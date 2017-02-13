@@ -5,11 +5,11 @@ parameters:
 framework:
     test: ~
     secret: "%secret%"
+    assets: false
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: %kernel.debug%
-    templating:
-        engines: ['php']
+    templating: false
     default_locale:  "%locale%"
     trusted_hosts:   ~
     trusted_proxies: ~

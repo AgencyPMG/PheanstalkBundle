@@ -48,6 +48,16 @@ final class PmgPheanstalkExtension extends ConfigurableExtension
         $container->setAlias('pmg_pheanstalk', $connections[$default]);
         $container->setParameter('pmg_pheanstalk.params.default_conn', $default);
         $container->setParameter('pmg_pheanstalk.params.connections', $connections);
+
+        $container->setDefinition('pmg_pheanstalk.stats_service', new Definition(
+            'PMG\PheanstalkBundle\Service\PheanstalkStatsService',
+            [new Reference('service_container')]
+        ));
+
+        $container->setDefinition('pmg_pheanstalk.queue_controller', new Definition(
+            'PMG\PheanstalkBundle\Controller\QueueController',
+            [new Reference('pmg_pheanstalk.stats_service')]
+        ));
     }
 
     private function loadConnection(ContainerBuilder $container, $name, array $config)
