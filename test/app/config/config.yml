@@ -2,6 +2,10 @@ parameters:
     secret: dev
     locale: ~
 
+services:
+  logger:
+    class: Psr\Log\NullLogger
+
 framework:
     test: ~
     secret: "%secret%"
