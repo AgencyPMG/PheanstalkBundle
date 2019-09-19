@@ -6,6 +6,7 @@
 
 - Pheanstalk 4.X is required
 - PHP 7.2+ is required
+- Symfony 3.4 or 4.X are required
 
 ### Fixed
 n/a
