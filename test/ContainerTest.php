@@ -12,8 +12,9 @@
 
 namespace PMG\PheanstalkBundle;
 
+use LogicException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Pheanstalk\PheanstalkInterface;
+use Pheanstalk\Contract\PheanstalkInterface;
 
 class ContainerTest extends TestCase
 {
@@ -23,57 +24,41 @@ class ContainerTest extends TestCase
     {
         $container = $this->loadContainer('default.yml');
 
-        $this->assertCount(1, $container->getParameter('pmg_pheanstalk.params.connections'));
+        $this->assertCount(1, $container->get(ConnectionManager::class));
         $this->assertPheanstalk($container->get('pmg_pheanstalk.default'), 'should have the default connection def');
         $this->assertPheanstalk($container->get('pmg_pheanstalk'), 'should have the default alias');
         $this->assertSame($container->get('pmg_pheanstalk.default'), $container->get('pmg_pheanstalk'));
-
-        $conn = $container->get('pmg_pheanstalk')->getConnection();
-        $this->assertEquals('localhost', $conn->getHost());
-        $this->assertEquals(PheanstalkInterface::DEFAULT_PORT, $conn->getPort());
+        $this->assertSame($container->get('pmg_pheanstalk.default'), $container->get(PheanstalkInterface::class));
     }
 
     public function testConfigurationCanLoadMultipleDefaultConnections()
     {
         $container = $this->loadContainer('multiple_default.yml');
 
-        $this->assertCount(2, $container->getParameter('pmg_pheanstalk.params.connections'));
+        $this->assertCount(2, $container->get(ConnectionManager::class));
         $this->assertPheanstalk($container->get('pmg_pheanstalk.default'), 'should have the "default" connection def');
         $this->assertPheanstalk($container->get('pmg_pheanstalk.another'), 'should have the "another" connection def');
         $this->assertPheanstalk($container->get('pmg_pheanstalk'), 'should have the default alias');
         $this->assertSame($container->get('pmg_pheanstalk.default'), $container->get('pmg_pheanstalk'));
-
-        $conn = $container->get('pmg_pheanstalk.default')->getConnection();
-        $this->assertEquals('localhost', $conn->getHost());
-        $this->assertEquals(PheanstalkInterface::DEFAULT_PORT, $conn->getPort());
-
-        $conn = $container->get('pmg_pheanstalk.another')->getConnection();
-        $this->assertEquals('localhost', $conn->getHost());
-        $this->assertEquals(PheanstalkInterface::DEFAULT_PORT, $conn->getPort());
-
+        $this->assertSame($container->get('pmg_pheanstalk.default'), $container->get(PheanstalkInterface::class));
     }
 
     public function testConfigurationWithDifferentDefaultConnectionCanBeLoaded()
     {
         $container = $this->loadContainer('altdefault.yml');
 
-        $this->assertCount(1, $container->getParameter('pmg_pheanstalk.params.connections'));
+        $this->assertCount(1, $container->get(ConnectionManager::class));
         $this->assertPheanstalk($container->get('pmg_pheanstalk.another'), 'should have the "another" connection def');
         $this->assertPheanstalk($container->get('pmg_pheanstalk'), 'should have the default alias');
         $this->assertSame($container->get('pmg_pheanstalk.another'), $container->get('pmg_pheanstalk'));
-
-        $conn = $container->get('pmg_pheanstalk.another')->getConnection();
-        $this->assertEquals('anotherHost', $conn->getHost());
-        $this->assertEquals(1111, $conn->getPort());
-        $this->assertEquals(10, $conn->getConnectTimeout());
+        $this->assertSame($container->get('pmg_pheanstalk.another'), $container->get(PheanstalkInterface::class));
     }
 
-    /**
-     * @expectedException LogicException
-     * @expectedExceptionMessage No Pheanstalk connection named
-     */
     public function testConfigurationWithUnrecognizedDefaultValueCausesError()
     {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('No Pheanstalk connection named');
+
         $this->loadContainer('baddefault.yml');
     }
 

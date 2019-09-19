@@ -12,14 +12,14 @@
 
 namespace PMG\PheanstalkBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use LogicException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use PMG\PheanstalkBundle\Controller\Exception\InvalidTube;
 use PMG\PheanstalkBundle\Service\StatsService;
 
-class QueueController extends Controller
+class QueueController
 {
     /**
      * @var PheanstalkStats
@@ -37,6 +37,8 @@ class QueueController extends Controller
 
         try {
             return $this->toResponse($this->stats->getStatsForTube($tube, $conn));
+        } catch (LogicException $e) {
+            throw new BadRequestHttpException($e->getMesasge(), $e);
         } catch (\Pheanstalk\Exception\ServerException $e) {
             throw new NotFoundHttpException(sprintf('Tube %s Not Found', $tube), $e);
         }
@@ -45,12 +47,25 @@ class QueueController extends Controller
     public function statsTubesAction(Request $r)
     {
         $conn = $this->getConnectionFromRequest($r);
-        return $this->toResponse($this->stats->listTubeStats($conn));
+        try {
+            return $this->toResponse($this->stats->listTubeStats($conn));
+        } catch (LogicException $e) {
+            throw new BadRequestHttpException($e->getMesasge(), $e);
+        }
     }
 
-    private function getConnectionFromRequest(Request $r)
+    private function getConnectionFromRequest(Request $r) : ?string
     {
-        return $r->get('connection');
+        $conn = $r->query->get('connection');
+        if (!$conn) {
+            return null;
+        }
+
+        if (!is_string($conn)) {
+            throw new BadRequestHttpException('`connection` must be a string');
+        }
+
+        return $conn;
     }
 
     /**

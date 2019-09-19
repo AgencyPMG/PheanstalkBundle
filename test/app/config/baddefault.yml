@@ -3,4 +3,6 @@ imports:
 
 pmg_pheanstalk:
     default_connection: oops
-    host: localhost
+    connections:
+        default:
+            host: localhost

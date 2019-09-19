@@ -15,27 +15,31 @@ namespace PMG\PheanstalkBundle\Service;
 interface StatsService
 {
     /**
+     * Get the server stats.
+     *
+     * @return string[]
+     */
+    public function serverStats(?string $connection);
+
+    /**
      * Returns all tubes available for the connection
      *
-     * @param PheanstalkInterface
+     * @param $connection the connection for which tubes should be listed
      * @return String[]
      */
-    public function listTubes($connection);
+    public function listTubes(?string $connection);
 
     /**
      * Returns stats for a given tube
      *
-     * @param $tube string - the name of the tube
-     * @param PheanstalkInterface
      * @return String[]
      */
-    public function getStatsForTube($tube, $connection);
+    public function getStatsForTube(string $tube, ?string $connection);
 
     /**
      * Returns stats for all tubes on the given connection
      *
-     * @param PheanstalkInterface
      * @return String[]
      */
-    public function listTubeStats($connection);
+    public function listTubeStats(?string $connection);
 }
