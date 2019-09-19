@@ -2,16 +2,17 @@ parameters:
     secret: dev
     locale: ~
 
+services:
+  logger:
+    class: Psr\Log\NullLogger
+
 framework:
     test: ~
     secret: "%secret%"
     assets: false
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
-        strict_requirements: %kernel.debug%
-    templating: false
+        strict_requirements: "%kernel.debug%"
     default_locale:  "%locale%"
-    trusted_hosts:   ~
-    trusted_proxies: ~
-    fragments:       ~
-    http_method_override: true
+    fragments: false
+    http_method_override: false

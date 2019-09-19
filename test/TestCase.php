@@ -13,12 +13,13 @@
 namespace PMG\PheanstalkBundle;
 
 use PMG\PheanstalkBundle\Test\TestKernel;
+use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
-abstract class TestCase extends \PHPUnit_Framework_TestCase
+abstract class TestCase extends PHPUnitTestCase
 {
     private $kernels = [];
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         foreach ($this->kernels as $k) {
             $k->shutdown();
@@ -32,7 +33,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         }
     }
 
-    protected function createKernel($config)
+    protected function createKernel($config) : TestKernel
     {
         // "unique" environment here to get around caching issues
         $kernel = new TestKernel($config, uniqid('pmgpheanstalk'));

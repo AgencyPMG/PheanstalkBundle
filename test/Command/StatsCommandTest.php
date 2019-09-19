@@ -14,6 +14,7 @@ namespace PMG\PheanstalkBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\ApplicationTester;
+use Pheanstalk\Exception as PheanstalkException;
 
 class StatsCommandTest extends \PMG\PheanstalkBundle\TestCase
 {
@@ -22,7 +23,7 @@ class StatsCommandTest extends \PMG\PheanstalkBundle\TestCase
         $tester = $this->createConsole();
 
         $this->assertEquals(0, $tester->run(['pheanstalk:stats']));
-        $this->assertContains('Server Stats', $tester->getDisplay());
+        $this->assertStringContainsStringIgnoringCase('Server Stats', $tester->getDisplay());
     }
 
     public function testStatsCanBeFetchedWithNamedConnection()
@@ -30,7 +31,7 @@ class StatsCommandTest extends \PMG\PheanstalkBundle\TestCase
         $tester = $this->createConsole();
 
         $this->assertEquals(0, $tester->run(['pheanstalk:stats', '-c' => 'default']));
-        $this->assertContains('Server Stats', $tester->getDisplay());
+        $this->assertStringContainsStringIgnoringCase('Server Stats', $tester->getDisplay());
     }
 
     public function testInvalidNamedConnectionCausesError()
@@ -38,7 +39,7 @@ class StatsCommandTest extends \PMG\PheanstalkBundle\TestCase
         $tester = $this->createConsole();
 
         $this->assertGreaterThan(0, $tester->run(['pheanstalk:stats', '-c' => 'doesNotExist']));
-        $this->assertContains('No Pheanstalk connection named', $tester->getDisplay());
+        $this->assertStringContainsStringIgnoringCase('No Pheanstalk connection named', $tester->getDisplay());
     }
 
     public function testStatsWithNonExistentTubeReportsError()
@@ -47,7 +48,7 @@ class StatsCommandTest extends \PMG\PheanstalkBundle\TestCase
 
         $tube = uniqid('pmgPheanstalk');
         $this->assertEquals(0, $tester->run(['pheanstalk:stats', 'tube' => [$tube]]));
-        $this->assertContains(sprintf('Tube "%s" not found', $tube), $tester->getDisplay());
+        $this->assertStringContainsStringIgnoringCase(sprintf('Tube "%s" not found', $tube), $tester->getDisplay());
     }
 
     public function testStatsForExistingTubePrintsTubeStats()
@@ -55,7 +56,7 @@ class StatsCommandTest extends \PMG\PheanstalkBundle\TestCase
         $tester = $this->createConsole();
 
         $this->assertEquals(0, $tester->run(['pheanstalk:stats', 'tube' => ['default']]));
-        $this->assertContains('default Stats', $tester->getDisplay());
+        $this->assertStringContainsStringIgnoringCase('default Stats', $tester->getDisplay());
     }
 
     public function testInvalidConnectionCausesError()
@@ -66,15 +67,18 @@ class StatsCommandTest extends \PMG\PheanstalkBundle\TestCase
         $tester = new ApplicationTester($console);
 
         $this->assertGreaterThan(0, $tester->run(['pheanstalk:stats', 'tube' => ['default']]));
-        $this->assertContains('Pheanstalk\\Exception', $tester->getDisplay());
+        $this->assertStringContainsStringIgnoringCase('Pheanstalk\\Exception', $tester->getDisplay());
     }
 
     private function createConsole()
     {
         $kernel = $this->createKernel('default.yml');
 
-        if (!$kernel->getContainer()->get('pmg_pheanstalk')->getConnection()->isServiceListening()) {
-            return $this->markTestSkipped('Beanstalkd is Not Running');
+        try {
+            $kernel->getContainer()->get('pmg_pheanstalk')->stats();
+        } catch (PheanstalkException $e) {
+            $this->markTestSkipped('Beanstalkd is Not Running: '.$e->getMessage());
+            return;
         }
 
         $console = new Application($kernel);

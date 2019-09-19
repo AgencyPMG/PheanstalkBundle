@@ -14,7 +14,7 @@ namespace PMG\PheanstalkBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Pheanstalk\PheanstalkInterface;
+use Pheanstalk\Contract\PheanstalkInterface;
 
 /**
  * The configuration definition. This just defines the host port and timeout
@@ -29,8 +29,7 @@ final class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $tree = new TreeBuilder();
-        $root = $tree->root('pmg_pheanstalk');
+        [$tree, $root] = $this->createTreeBuilder('pmg_pheanstalk');
 
         $root
             ->beforeNormalization()
@@ -38,12 +37,12 @@ final class Configuration implements ConfigurationInterface
                     return is_array($config) && !array_key_exists('connections', $config);
                 })
                 ->then(function ($config) {
-                    $default = isset($config['default_connection']) ? $config['default_connection'] : 'default';
+                    $default = $config['default_connection'] ?? 'default';
                     unset($config['default_connection']);
 
                     return [
                         'default_connection'    => $default,
-                        'connections'           => ['default' => $config],
+                        'connections'           => [$default => $config],
                     ];
                 })
             ->end()
@@ -64,13 +63,13 @@ final class Configuration implements ConfigurationInterface
 
     private function createConnectionsNode()
     {
-        $tree = new TreeBuilder();
-        $root = $tree->root('connections');
+        [$tree, $root] = $this->createTreeBuilder('connections');
 
         $root
             ->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
             ->prototype('array')
+            ->canBeEnabled()
             ->children()
                 ->scalarNode('host')
                     ->cannotBeEmpty()
@@ -93,5 +92,19 @@ final class Configuration implements ConfigurationInterface
         ;
 
         return $root;
+    }
+
+    private function createTreeBuilder(string $rootName) : array
+    {
+        // compat: symfony < 4.1
+        if (method_exists(TreeBuilder::class, 'getRootNode')) {
+            $tree = new TreeBuilder($rootName);
+            $root = $tree->getRootNode();
+        } else {
+            $tree = new TreeBuilder();
+            $root = $tree->root($rootName);
+        }
+
+        return [$tree, $root];
     }
 }

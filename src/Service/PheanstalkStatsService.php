@@ -14,20 +14,30 @@ namespace PMG\PheanstalkBundle\Service;
 
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Pheanstalk\Contract\PheanstalkInterface;
+use PMG\PheanstalkBundle\ConnectionManager;
 
 class PheanstalkStatsService implements StatsService
 {
-    private $container;
+    private $connections;
 
-    public function __construct(Container $container)
+    public function __construct(ConnectionManager $connections)
     {
-        $this->container = $container;
+        $this->connections = $connections;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function listTubes($connection)
+    public function serverStats(?string $connection)
+    {
+        return $this->getConnection($connection)->stats();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function listTubes(?string $connection)
     {
         return $this->getConnection($connection)->listTubes();
     }
@@ -35,7 +45,7 @@ class PheanstalkStatsService implements StatsService
     /**
      * {@inheritdoc}
      */
-    public function getStatsForTube($tube, $connection)
+    public function getStatsForTube(string $tube, ?string $connection)
     {
         return (array) $this->getConnection($connection)->statsTube($tube);
     }
@@ -43,7 +53,7 @@ class PheanstalkStatsService implements StatsService
     /**
      * {@inheritdoc}
      */
-    public function listTubeStats($connection)
+    public function listTubeStats(?string $connection)
     {
         $tubes = $this->getConnection($connection)->listTubes();
 
@@ -60,17 +70,10 @@ class PheanstalkStatsService implements StatsService
     /**
      * Attempts to get a valid Pheanstalk connection
      *
-     * @return \Pheanstalk\PheanstalkInterface
+     * @return Pheanstalk\Contract\PheanstalkInterface
      */
-    private function getConnection($connName=null)
+    private function getConnection(?string $connName) : PheanstalkInterface
     {
-        $connName = $connName ?: $this->container->getParameter('pmg_pheanstalk.params.default_conn');
-
-        $valid = $this->container->getParameter('pmg_pheanstalk.params.connections');
-        if (!isset($valid[$connName])) {
-            throw new BadRequestHttpException(sprintf("{$connName} is not a valid Pheanstalk connection", $connName));
-        }
-
-        return $this->container->get("pmg_pheanstalk.{$connName}");
+        return $connName ? $this->connections->get($connName) : $this->connections->getDefault();
     }
 }

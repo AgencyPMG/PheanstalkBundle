@@ -1,4 +1,2 @@
 imports:
     - { resource: config.yml }
-
-pmg_pheanstalk: ~

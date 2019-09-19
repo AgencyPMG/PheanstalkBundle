@@ -12,27 +12,40 @@
 
 namespace PMG\PheanstalkBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Pheanstalk\PheanstalkInterface;
 use Pheanstalk\Exception\ServerException;
+use PMG\PheanstalkBundle\Service\StatsService;
 
 /**
  * Show the beanstalkd server or tube states.
  *
  * @since    1.0
  */
-final class StatsCommand extends ContainerAwareCommand
+final class StatsCommand extends Command
 {
+    protected static $defaultName = 'pheanstalk:stats';
+
+    /**
+     * @var StatsService
+     */
+    private $stats;
+
+    public function __construct(StatsService $stats, $name=null)
+    {
+        parent::__construct($name);
+        $this->stats = $stats;
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('pheanstalk:stats');
         $this->setDescription('Show the stats for the Beanstalkd server or a single tube');
         $this->addOption(
             '--connection',
@@ -52,24 +65,24 @@ final class StatsCommand extends ContainerAwareCommand
      */
     public function execute(InputInterface $in, OutputInterface $out)
     {
-        $conn = $this->getConnection($in);
+        $connName = $in->getOption('connection');
 
         if ($tubes = $in->getArgument('tube')) {
             foreach (array_unique($tubes) as $tube) {
-                $this->writeTubeStats($conn, $tube, $out);
+                $this->writeTubeStats($connName, $tube, $out);
             }
         } else {
             $out->writeln('<info>Server Stats</info>');
-            $this->writeStats($conn->stats(), $out);
+            $this->writeStats($this->stats->serverStats($connName), $out);
         }
 
         return 0;
     }
 
-    private function writeTubeStats(PheanstalkInterface $conn, $tube, OutputInterface $out)
+    private function writeTubeStats(?string $connName, string $tube, OutputInterface $out)
     {
         try {
-            $stats = $conn->statsTube($tube);
+            $stats = $this->stats->getStatsForTube($tube, $connName);
             $out->writeln("<info>{$tube} Stats</info>");
             $this->writeStats($stats, $out);
         } catch (ServerException $e) {

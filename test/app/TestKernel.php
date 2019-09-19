@@ -37,7 +37,7 @@ final class TestKernel extends Kernel
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load($this->getRootDir()."/config/{$this->configFile}");
+        $loader->load(__DIR__.'/config/'.$this->configFile);
     }
 
     public function getLogDir()

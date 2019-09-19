@@ -12,13 +12,18 @@
 
 namespace PMG\PheanstalkBundle\DependencyInjection;
 
+use LogicException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 use Pheanstalk\Pheanstalk;
-use Pheanstalk\PheanstalkInterface;
+use Pheanstalk\Contract\PheanstalkInterface;
+use PMG\PheanstalkBundle\ConnectionManager;
+use PMG\PheanstalkBundle\Service\PheanstalkStatsService;
+use PMG\PheanstalkBundle\Service\StatsService;
+use PMG\PheanstalkBundle\Controller\QueueController;
+use PMG\PheanstalkBundle\Command\StatsCommand;
 
 /**
  * DI configuration for the bundle.
@@ -39,36 +44,50 @@ final class PmgPheanstalkExtension extends ConfigurableExtension
 
         $default = $config['default_connection'];
         if (!isset($connections[$default])) {
-            throw new \LogicException(sprintf(
+            throw new LogicException(sprintf(
                 'No Pheanstalk connection named "%s" in the configuration, cannot set the default connection',
                 $config['default_connection']
             ));
         }
 
-        $container->setAlias('pmg_pheanstalk', $connections[$default]);
-        $container->setParameter('pmg_pheanstalk.params.default_conn', $default);
-        $container->setParameter('pmg_pheanstalk.params.connections', $connections);
+        $container->setAlias('pmg_pheanstalk', $connections[$default])
+            ->setPublic(true);
+        $container->setAlias(PheanstalkInterface::class, $connections[$default])
+            ->setPublic(true);
 
-        $container->setDefinition('pmg_pheanstalk.stats_service', new Definition(
-            'PMG\PheanstalkBundle\Service\PheanstalkStatsService',
-            [new Reference('service_container')]
-        ));
+        $container->register('pmg_pheanstalk.internal.connection_manager', ConnectionManager::class)
+            ->addArgument(array_map(function (string $connectionService) : Reference {
+                return new Reference($connectionService);
+            }, $connections))
+            ->addArgument($config['default_connection']);
+        $container->setAlias(ConnectionManager::class, 'pmg_pheanstalk.internal.connection_manager')
+            ->setPublic(true);
+                
+        $container->register('pmg_pheanstalk.internal.stats_service', PheanstalkStatsService::class)
+            ->addArgument(new Reference('pmg_pheanstalk.internal.connection_manager'));
+        $container->setAlias(StatsService::class, 'pmg_pheanstalk.internal.stats_service')
+            ->setPublic(true);
 
-        $container->setDefinition('pmg_pheanstalk.queue_controller', new Definition(
-            'PMG\PheanstalkBundle\Controller\QueueController',
-            [new Reference('pmg_pheanstalk.stats_service')]
-        ));
+        $container->register(QueueController::class)
+            ->addArgument(new Reference('pmg_pheanstalk.internal.stats_service'))
+            ->setPublic(true);
+
+        $container->register(StatsCommand::class)
+            ->addArgument(new Reference('pmg_pheanstalk.internal.stats_service'))
+            ->addTag('console.command');
     }
 
     private function loadConnection(ContainerBuilder $container, $name, array $config)
     {
         $name = self::serviceName($name);
-        $container->setDefinition($name, new Definition(Pheanstalk::class, [
-            $config['host'],
-            empty($config['port']) ? PheanstalkInterface::DEFAULT_PORT : $config['port'],
-            isset($config['timeout']) ? $config['timeout'] : null,
-            self::asBool(isset($config['persist']) ? $config['persist'] : false)
-        ]));
+        $container->register($name, Pheanstalk::class)
+            ->setFactory([Pheanstalk::class, 'create'])
+            ->setArguments([
+                $config['host'],
+                $config['port'] ?? PheanstalkInterface::DEFAULT_PORT,
+                $config['timeout'] ?? 10, // what pheanstalk itself defaults to
+            ])
+            ->setPublic(true);
 
         return $name;
     }
