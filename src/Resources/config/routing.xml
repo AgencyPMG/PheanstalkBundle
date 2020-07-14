@@ -5,11 +5,11 @@
     http://symfony.com/schema/routing/routing-1.0.xsd">
     
     <route id="pmg_pheanstalk.stats_tube" path="/{tube}" methods="GET">
-        <default key="_controller">PMG\PheanstalkBundle\Controller::statsTubeAction</default>
+        <default key="_controller">PMG\PheanstalkBundle\Controller\QueueController::statsTubeAction</default>
     </route>
 
     <route id="pmg_pheanstalk.stats_tubes" path="/" methods="GET">
-        <default key="_controller">PMG\PheanstalkBundle\Controller::statsTubesAction</default>
+        <default key="_controller">PMG\PheanstalkBundle\Controller\QueueController::statsTubesAction</default>
     </route>
 
 </routes>

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.1
+
+### Fixed
+
+- Fixed the routing configuration to reference the correct controller
+
 ## 2.0.0
 
 ### Changed
