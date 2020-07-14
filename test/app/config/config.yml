@@ -1,6 +1,5 @@
 parameters:
     secret: dev
-    locale: ~
 
 services:
   logger:
@@ -13,7 +12,7 @@ framework:
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: "%kernel.debug%"
-    default_locale:  "%locale%"
+    default_locale: en
     fragments: false
     http_method_override: false
     translator: false
