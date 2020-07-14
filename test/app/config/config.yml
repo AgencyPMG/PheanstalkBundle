@@ -16,3 +16,4 @@ framework:
     default_locale:  "%locale%"
     fragments: false
     http_method_override: false
+    translator: false
