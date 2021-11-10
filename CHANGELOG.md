@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.0.0
+
+### Changed
+
+- Added PHP 8.X support
+- Dropped support for PHP 7.1, 7.2, and 7.3
+- Dropped support for Symfony 3.4
+
+
 ## 2.0.1
 
 ### Fixed
