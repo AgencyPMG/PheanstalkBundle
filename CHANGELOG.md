@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0.0
+
+### Changed
+
+- Dropped PHP 7.4 support
+
 ## 3.0.0
 
 ### Changed

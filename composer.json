@@ -4,7 +4,7 @@
     "keywords": ["beanstalkd", "pheanstalk"],
     "license": "Apache-2.0",
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.0",
         "pda/pheanstalk": "^4.0",
         "symfony/framework-bundle": "^4.4",
         "symfony/console": "^4.4",
