@@ -27,7 +27,7 @@ final class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder() : TreeBuilder
     {
         [$tree, $root] = $this->createTreeBuilder('pmg_pheanstalk');
 
