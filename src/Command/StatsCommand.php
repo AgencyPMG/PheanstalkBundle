@@ -44,7 +44,7 @@ final class StatsCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure() : void
     {
         $this->setDescription('Show the stats for the Beanstalkd server or a single tube');
         $this->addOption(
@@ -63,7 +63,7 @@ final class StatsCommand extends Command
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $in, OutputInterface $out)
+    public function execute(InputInterface $in, OutputInterface $out) : int
     {
         $connName = $in->getOption('connection');
 
@@ -99,22 +99,5 @@ final class StatsCommand extends Command
             $out->writeln(sprintf('<comment>%s</comment>: %s', $name, $val));
         }
         $out->writeln('');
-    }
-
-    private function getConnection(InputInterface $in)
-    {
-        $container = $this->getContainer();
-        $conn = $in->getOption('connection');
-
-        if (!$conn) {
-            return $container->get('pmg_pheanstalk');
-        }
-
-        $connections = $container->getParameter('pmg_pheanstalk.params.connections');
-        if (!isset($connections[$conn])) {
-            throw new \InvalidArgumentException(sprintf('No Pheanstalk connection named "%s"', $conn));
-        }
-
-        return $container->get($connections[$conn]);
     }
 }

@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.0.0
+
+### Added
+
+- Added support for Symfony 5.4
+
+### Changed
+
+- Dropped PHP 7.4 support
+
 ## 3.0.0
 
 ### Changed

@@ -25,27 +25,30 @@ final class TestKernel extends Kernel
         parent::__construct($env, true);
     }
 
-    public function registerBundles()
+    public function registerBundles() : array
     {
-        $bundles = array(
+        return [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new \PMG\PheanstalkBundle\PmgPheanstalkBundle(),
-        );
-
-        return $bundles;
+        ];
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader) : void
     {
         $loader->load(__DIR__.'/config/'.$this->configFile);
     }
 
-    public function getLogDir()
+    public function getProjectDir() : string
+    {
+        return __DIR__;
+    }
+
+    public function getLogDir() : string
     {
         return __DIR__.'/tmp';
     }
 
-    public function getCacheDir()
+    public function getCacheDir() : string
     {
         return __DIR__.'/tmp';
     }
