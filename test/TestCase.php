@@ -12,6 +12,8 @@
 
 namespace PMG\PheanstalkBundle;
 
+use Pheanstalk\Pheanstalk;
+use Pheanstalk\Contract\PheanstalkInterface;
 use PMG\PheanstalkBundle\Test\TestKernel;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
@@ -41,5 +43,13 @@ abstract class TestCase extends PHPUnitTestCase
         $this->kernels[] = $kernel;
 
         return $kernel;
+    }
+
+    protected function createPheanstalk(array $config=[]) : PheanstalkInterface
+    {
+        $host = $config['host'] ?? (getenv('BEANSTALKD_HOST') ?: 'localhost');
+        $port = $config['port'] ?? (getenv('BEANSTALKD_PORT') ?: 11300);
+
+        return Pheanstalk::create($host, $port, $config['connect_timeout'] ?? 10);
     }
 }

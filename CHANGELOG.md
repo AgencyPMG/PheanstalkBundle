@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.1.0
+
+### Added
+
+- Added a console command to purge all jobs from a queue
+
+### Changed
+
+- Dropped Symfony 4.4 support
+
 ## 4.0.0
 
 ### Added
