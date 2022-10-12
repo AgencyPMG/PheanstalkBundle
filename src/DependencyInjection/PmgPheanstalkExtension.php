@@ -22,7 +22,9 @@ use Pheanstalk\Contract\PheanstalkInterface;
 use PMG\PheanstalkBundle\ConnectionManager;
 use PMG\PheanstalkBundle\Service\PheanstalkStatsService;
 use PMG\PheanstalkBundle\Service\StatsService;
+use PMG\PheanstalkBundle\Service\QueueUtilities;
 use PMG\PheanstalkBundle\Controller\QueueController;
+use PMG\PheanstalkBundle\Command\PurgeQueueCommand;
 use PMG\PheanstalkBundle\Command\StatsCommand;
 
 /**
@@ -68,12 +70,19 @@ final class PmgPheanstalkExtension extends ConfigurableExtension
         $container->setAlias(StatsService::class, 'pmg_pheanstalk.internal.stats_service')
             ->setPublic(true);
 
+        $container->register(QueueUtilities::class)
+            ->addArgument(new Reference('pmg_pheanstalk.internal.connection_manager'))
+            ->setPublic(true);
+
         $container->register(QueueController::class)
             ->addArgument(new Reference('pmg_pheanstalk.internal.stats_service'))
             ->setPublic(true);
 
         $container->register(StatsCommand::class)
             ->addArgument(new Reference('pmg_pheanstalk.internal.stats_service'))
+            ->addTag('console.command');
+        $container->register(PurgeQueueCommand::class)
+            ->addArgument(new Reference(QueueUtilities::class))
             ->addTag('console.command');
     }
 
