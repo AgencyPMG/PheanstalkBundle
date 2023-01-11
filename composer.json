@@ -14,11 +14,20 @@
         "phpunit/phpunit": "^9.5",
         "symfony/yaml": "^5.4",
         "symfony/dependency-injection": "^5.4",
-        "symfony/phpunit-bridge": "^5.4"
+        "symfony/phpunit-bridge": "^5.4",
+        "symfony/console": "^5.4"
     },
     "autoload": {
         "psr-4": {
             "PMG\\PheanstalkBundle\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PMG\\PheanstalkBundle\\": "test/"
+        },
+        "files": [
+            "test/app/TestKernel.php"
+        ]
     }
 }
