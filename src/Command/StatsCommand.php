@@ -12,12 +12,12 @@
 
 namespace PMG\PheanstalkBundle\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Pheanstalk\PheanstalkInterface;
 use Pheanstalk\Exception\ServerException;
 use PMG\PheanstalkBundle\Service\StatsService;
 
@@ -26,10 +26,9 @@ use PMG\PheanstalkBundle\Service\StatsService;
  *
  * @since    1.0
  */
+#[AsCommand(name: 'pheanstalk:stats')]
 final class StatsCommand extends Command
 {
-    protected static $defaultName = 'pheanstalk:stats';
-
     /**
      * @var StatsService
      */
