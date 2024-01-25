@@ -12,9 +12,10 @@ jobs:
 
     strategy:
       matrix:
-        include:
-          - php-version: 8.2
-          - php-version: 8.3
+        php-version: ["8.2", "8.3"]
+        composer-command:
+          - composer update --prefer-lowest --prefer-dist --prefer-stable
+          - composer install
 
     steps:
       - name: checkout
@@ -27,6 +28,7 @@ jobs:
         uses: ./.github/actions/setup-php
         with:
           php-version: "${{ matrix.php-version }}"
+          composer-command: ${{ matrix.composer-command }}
 
       - name: tests
         run: ./vendor/bin/phpunit
