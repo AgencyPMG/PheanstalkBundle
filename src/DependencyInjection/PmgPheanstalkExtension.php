@@ -37,7 +37,7 @@ final class PmgPheanstalkExtension extends ConfigurableExtension
     /**
      * {@inheritdoc}
      */
-    protected function loadInternal(array $config, ContainerBuilder $container)
+    protected function loadInternal(array $config, ContainerBuilder $container): void
     {
         $connections = [];
         foreach ($config['connections'] as $name => $connConfig) {

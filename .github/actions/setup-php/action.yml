@@ -19,6 +19,7 @@ runs:
           tools: composer
           coverage: xdebug
           ini-values: zend.assertions=1,assert.exception=1,xdebug.mode=coverage
+          composer-command: ${{ matrix.composer-command }}
 
       - name: composer cache
         id: composercache
@@ -34,4 +35,4 @@ runs:
 
       - name: install php dependencies
         shell: bash
-        run: composer install --no-interaction --no-progress
+        run: ${{ inputs.composer-command }}

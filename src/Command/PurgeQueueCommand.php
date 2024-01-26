@@ -12,21 +12,20 @@
 
 namespace PMG\PheanstalkBundle\Command;
 
+use PMG\PheanstalkBundle\Service\QueueUtilities;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Pheanstalk\PheanstalkInterface;
-use PMG\PheanstalkBundle\Service\QueueUtilities;
 
 /**
  * Purge a single beanstalkd tube of jobs.
  */
+#[AsCommand(name: 'pheanstalk:purge-queue')]
 final class PurgeQueueCommand extends Command
 {
-    protected static $defaultName = 'pheanstalk:purge-queue';
-
     public function __construct(private QueueUtilities $queueUtilities, $name=null)
     {
         parent::__construct($name);
