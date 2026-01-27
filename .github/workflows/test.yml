@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: ["8.3", "8.4"]
+        php-version: ["8.2", "8.3"]
         composer-command:
           - composer update --prefer-lowest --prefer-dist --prefer-stable
           - composer install
