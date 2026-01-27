@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     name: test
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-latest"
 
     strategy:
       matrix:
@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: start beanstalkd
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: PHP
         uses: ./.github/actions/setup-php
